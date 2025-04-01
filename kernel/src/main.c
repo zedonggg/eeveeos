@@ -4,6 +4,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include <limine.h>
+#include <gdt/gdt.h>
 
 // Set the base revision to 3, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -105,6 +106,15 @@ void kmain(void) {
         hcf();
     }
 
+    gdt_segment gdt_table[7];
+    init_gdt(gdt_table, 7);
+
+    GDTR gdtr;
+    gdtr.offset = (uint64_t) &gdt_table[0];
+    gdtr.size = sizeof(gdt_segment) * 7 - 1;
+
+    load_gdt(&gdtr);
+
     // Ensure we got a framebuffer.
     if (framebuffer_request.response == NULL
      || framebuffer_request.response->framebuffer_count < 1) {
@@ -129,6 +139,10 @@ void kmain(void) {
         0, 0,
         0
     );
+
+    
+
+    
 
     const char msg[] = "Hello world\n";
 
