@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include <limine.h>
 #include <gdt/gdt.h>
+#include <idt/idt.h>
 
 // Set the base revision to 3, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -97,6 +98,20 @@ static void hcf(void) {
     }
 }
 
+static inline void outb(uint16_t port, uint8_t val) {
+    __asm__ volatile ("outb %0, %1" : : "a"(val), "Nd"(port));
+}
+
+void debug_putc(char c) {
+    outb(0xE9, c);
+}
+
+void debug_print(const char* s) {
+    while (*s) {
+        debug_putc(*s++);
+    }
+}
+
 // The following will be our kernel's entry point.
 // If renaming kmain() to something else, make sure to change the
 // linker script accordingly.
@@ -114,6 +129,8 @@ void kmain(void) {
     gdtr.size = sizeof(gdt_segment) * 7 - 1;
 
     load_gdt(&gdtr);
+
+    init_idt();
 
     // Ensure we got a framebuffer.
     if (framebuffer_request.response == NULL
@@ -144,9 +161,17 @@ void kmain(void) {
 
     
 
+    
+
     const char msg[] = "Hello world\n";
 
     flanterm_write(ft_ctx, msg, sizeof(msg));
+
+    int i = 1 / 0;
+
+    __asm__ volatile ("div %0" :: "r"(0));
+
+    debug_print("Hello from Limine kernel with 0xE9!\n");
 
     // Note: we assume the framebuffer model is RGB with 32-bit pixels.
     // for (size_t i = 0; i < 100; i++) {
