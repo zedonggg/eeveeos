@@ -1,6 +1,10 @@
 #include <stdint.h>
 #include "gdt.h"
 
+gdt_segment gdt_table[7];
+GDTR gdtr;
+
+
 gdt_segment init_gdt_segment(uint32_t base, uint32_t limit, uint8_t access, uint8_t flags) {
     gdt_segment res;
 
@@ -14,7 +18,7 @@ gdt_segment init_gdt_segment(uint32_t base, uint32_t limit, uint8_t access, uint
     return res;
 }
 
-void init_gdt(gdt_segment *gdt_table, int table_size) {
+void init_gdt() {
     gdt_table[0] = init_gdt_segment(0,0,0,0);
 
     //16-bit code and data
@@ -28,6 +32,11 @@ void init_gdt(gdt_segment *gdt_table, int table_size) {
     //64-bit code and data
     gdt_table[5] = init_gdt_segment(0, 0xFFFF, 0x9B, 0xAF);
     gdt_table[6] = init_gdt_segment(0, 0xFFFF, 0x93, 0xAF);
+
+    gdtr.offset = (uint64_t) &gdt_table[0];
+    gdtr.size = sizeof(gdt_segment) * 7 - 1;
+
+    load_gdt(&gdtr);
 
 }
 

@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "idt.h"
+#include "../log/log.h"
 
 interrupt_descriptor idt[256];
 
@@ -29,7 +30,7 @@ void load_idt() {
 void interrupt_dispatch(stack_frame* ptr) {
     switch(ptr->vector_number) {
         case 0:
-            __asm__ volatile ("outb %0, %1" : : "a"((uint8_t)'x'), "Nd"(0xE9));
+            console_log("test");
             return;
         default:
             __asm__ volatile ("outb %0, %1" : : "a"((uint8_t)'b'), "Nd"(0xE9));

@@ -35,7 +35,7 @@ typedef struct {
 
 gdt_segment init_gdt_segment(uint32_t base, uint32_t limit, uint8_t access, uint8_t flags);
 
-void init_gdt(gdt_segment *gdt_table, int table_size);
+void init_gdt();
 
 __attribute__((naked)) void load_gdt(GDTR *gdtr);
 

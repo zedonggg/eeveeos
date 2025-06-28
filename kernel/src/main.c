@@ -120,16 +120,8 @@ void kmain(void) {
     if (LIMINE_BASE_REVISION_SUPPORTED == false) {
         hcf();
     }
-
-    gdt_segment gdt_table[7];
-    init_gdt(gdt_table, 7);
-
-    GDTR gdtr;
-    gdtr.offset = (uint64_t) &gdt_table[0];
-    gdtr.size = sizeof(gdt_segment) * 7 - 1;
-
-    load_gdt(&gdtr);
-
+    
+    init_gdt();
     init_idt();
 
     // Ensure we got a framebuffer.
@@ -165,9 +157,7 @@ void kmain(void) {
 
     const char msg[] = "Hello world\n";
 
-    flanterm_write(ft_ctx, msg, sizeof(msg));
-
-    int i = 1 / 0;
+    // flanterm_write(ft_ctx, msg, sizeof(msg));
 
     __asm__ volatile ("div %0" :: "r"(0));
 
