@@ -8,6 +8,7 @@
 #include <idt/idt.h>
 #include <video/video.h>
 #include <utils/utils.h>
+#include <mem/pmm.h>
 
 // Set the base revision to 3, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -122,6 +123,7 @@ void kmain(void) {
     init_video();
     init_gdt();
     init_idt();
+    init_pmm();
 
 
 
