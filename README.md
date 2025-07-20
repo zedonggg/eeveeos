@@ -1,8 +1,6 @@
-# Limine C Template
+# EeveeOS
 
-This repository will demonstrate how to set up a basic x86-64 kernel in C using Limine.
-
-It is recommended to cross reference the contents of this repository with [the Limine Bare Bones](https://osdev.wiki/wiki/Limine_Bare_Bones) OSDev wiki page.
+A WIP simple x86-64 monolithic kernel build upon the Limine boot protocol. Still in dev. Feel free to clone and poke around on your own!
 
 ## How to use this?
 
