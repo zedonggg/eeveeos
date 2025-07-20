@@ -2,6 +2,8 @@
 
 A WIP simple x86-64 monolithic kernel build upon the Limine boot protocol. Still in dev. Feel free to clone and poke around on your own!
 
+![splash screen](image.png)
+
 ## How to use this?
 
 ### Dependencies
