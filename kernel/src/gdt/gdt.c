@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "gdt.h"
+#include "../video/video.h"
 
 gdt_segment gdt_table[7];
 GDTR gdtr;
@@ -19,6 +20,7 @@ gdt_segment init_gdt_segment(uint32_t base, uint32_t limit, uint8_t access, uint
 }
 
 void init_gdt() {
+    kprintf("Initializing GDT...\n");
     gdt_table[0] = init_gdt_segment(0,0,0,0);
 
     //16-bit code and data
@@ -37,7 +39,7 @@ void init_gdt() {
     gdtr.size = sizeof(gdt_segment) * 7 - 1;
 
     load_gdt(&gdtr);
-
+    kprintf("GDT loaded successfully\n");
 }
 
 __attribute__((naked)) void load_gdt(GDTR *gdtr) {

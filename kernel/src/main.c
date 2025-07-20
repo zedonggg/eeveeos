@@ -6,6 +6,8 @@
 #include <limine.h>
 #include <gdt/gdt.h>
 #include <idt/idt.h>
+#include <video/video.h>
+#include <utils/utils.h>
 
 // Set the base revision to 3, this is recommended as this is the latest
 // base revision described by the Limine boot protocol specification.
@@ -19,11 +21,7 @@ static volatile LIMINE_BASE_REVISION(3);
 // be made volatile or equivalent, _and_ they should be accessed at least
 // once or marked as used with the "used" attribute as done here.
 
-__attribute__((used, section(".limine_requests")))
-static volatile struct limine_framebuffer_request framebuffer_request = {
-    .id = LIMINE_FRAMEBUFFER_REQUEST,
-    .revision = 0
-};
+//__attribute__((used, section(".limine_requests")))
 
 // Finally, define the start and end markers for the Limine requests.
 // These can also be moved anywhere, to any .c file, as seen fit.
@@ -121,45 +119,16 @@ void kmain(void) {
         hcf();
     }
     
+    init_video();
     init_gdt();
     init_idt();
 
-    // Ensure we got a framebuffer.
-    if (framebuffer_request.response == NULL
-     || framebuffer_request.response->framebuffer_count < 1) {
-        hcf();
-    }
 
-    // Fetch the first framebuffer.
-    struct limine_framebuffer *framebuffer = framebuffer_request.response->framebuffers[0];
 
-    struct flanterm_context *ft_ctx = flanterm_fb_init(
-        NULL,
-        NULL,
-        framebuffer->address, framebuffer->width, framebuffer->height, framebuffer->pitch,
-        framebuffer->red_mask_size, framebuffer->red_mask_shift,
-        framebuffer->green_mask_size, framebuffer->green_mask_shift,
-        framebuffer->blue_mask_size, framebuffer->blue_mask_shift,
-        NULL,
-        NULL, NULL,
-        NULL, NULL,
-        NULL, NULL,
-        NULL, 0, 0, 1,
-        0, 0,
-        0
-    );
+    //flanterm_write(ft_ctx, msg, sizeof(msg));
 
-    
 
-    
-
-    
-
-    const char msg[] = "Hello world\n";
-
-    // flanterm_write(ft_ctx, msg, sizeof(msg));
-
-    __asm__ volatile ("div %0" :: "r"(0));
+    // __asm__ volatile ("div %0" :: "r"(0));
 
     debug_print("Hello from Limine kernel with 0xE9!\n");
 

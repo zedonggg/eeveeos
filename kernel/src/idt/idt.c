@@ -1,6 +1,7 @@
 #include <stdint.h>
 #include "idt.h"
 #include "../log/log.h"
+#include "../video/video.h"
 
 interrupt_descriptor idt[256];
 
@@ -31,6 +32,9 @@ void interrupt_dispatch(stack_frame* ptr) {
     switch(ptr->vector_number) {
         case 0:
             console_log("test");
+            for (;;) {
+                asm ("hlt");
+            }
             return;
         default:
             __asm__ volatile ("outb %0, %1" : : "a"((uint8_t)'b'), "Nd"(0xE9));
@@ -38,10 +42,12 @@ void interrupt_dispatch(stack_frame* ptr) {
 }
 
 void init_idt() {
+    kprintf("Initializing IDT...\n");
     for (int i = 0; i < 256; i++) {
         void *handler = (void *)((uintptr_t)&vector_0_handler + i * 16);
         set_idt_entry(handler, i, 0, idt);
     }
 
     load_idt();
+    kprintf("IDT loaded successfully\n");
 }
